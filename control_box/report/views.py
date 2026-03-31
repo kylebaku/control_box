@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from django.http import HttpResponse
 
-# Create your views here.
+def report(request):    
+    return HttpResponse(f'Отчеты')
+
+def report_list(request,pk):    
+    return HttpResponse(f'Отчеты {pk}') 

@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from django.http import HttpResponse
 
-# Create your views here.
+def monitoring_detail(request,pk):    
+    return HttpResponse(f'Cтраница мониторинга {pk}')
+
+def monitoring(request):    
+    return HttpResponse(f'Cтраница мониторинга ')

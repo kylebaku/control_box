@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+   {% if title == "Главная страница" %}
+    <h1>{{title}}</h1>
+   {% for lis in lists %}
+      <p>{{lis}}<a href="{% url 'report:report' %}">s</a></p>
+    {% if forloop.last %}
+     <hr>
+    {% endif %}
+   {% endfor %}
+   {% else  %}
+    'not content'
+   {% endif %}
+
+{% endblock %}
