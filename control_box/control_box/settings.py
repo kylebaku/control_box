@@ -1,7 +1,16 @@
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# load_dotenv(BASE_DIR / '.env')
+# print("=== ЗАГРУЗКА ПЕРЕМЕННЫХ ===")
+# print(f"zbx_login: {os.getenv('zbx_login')}")
+# print(f"zbx_pass: {'SET' if os.getenv('zbx_pass') else 'NOT SET'}")
+# print("==========================")
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -36,6 +46,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'control_box.urls'
@@ -67,6 +78,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'postgres': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'zabbix_db',
+        'USER': os.getenv('zbx_login'),
+        'PASSWORD': os.getenv('zbx_pass'),
+        'HOST': 'zabbix-data.database-prod-pg.cloud.vimpelcom.ru',
+        'PORT': '5432',
     }
 }
 
@@ -93,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'Ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -110,3 +129,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static_files',
 ] 
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
