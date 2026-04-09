@@ -2,32 +2,25 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# load_dotenv(BASE_DIR / '.env')
-# print("=== ЗАГРУЗКА ПЕРЕМЕННЫХ ===")
-# print(f"zbx_login: {os.getenv('zbx_login')}")
-# print(f"zbx_pass: {'SET' if os.getenv('zbx_pass') else 'NOT SET'}")
-# print("==========================")
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-#5@)jnz58j5d_56q4soa%#l(t)47!ays(q^c&d=fl6ahm4&w^g'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
+load_dotenv(BASE_DIR / '.env')
+print("=== ЗАГРУЗКА ПЕРЕМЕННЫХ ===")
+print(f"zbx_login: {os.getenv('zbx_login')}")
+print(f"zbx_pass: {'SET' if os.getenv('zbx_pass') else 'NOT SET'}")
+print("==========================")
 
 INSTALLED_APPS = [
+    'django_bootstrap5',
     'homepage.apps.HomepageConfig',
     'monitoring.apps.MonitoringConfig',
+    'generation.apps.GenerationConfig',
     'report.apps.ReportConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -128,6 +121,7 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static_files',
+    BASE_DIR / 'static',
 ] 
 
 INTERNAL_IPS = [

@@ -19,4 +19,10 @@ def monitoring_detail(request, pk):
 
 
 def monitoring(request):
-    return HttpResponse(f'Cтраница мониторинга ')
+    template_name = 'monitoring/index.html'
+    
+    category = CategoryStok.objects.using('postgres').all()
+    context = {
+        'type': category,
+    }
+    return render(request, template_name, context)
