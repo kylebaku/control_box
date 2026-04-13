@@ -4,6 +4,11 @@ PRIORITY_CHOICES = [
     ]
 
 ENVIRONMENT = [
-    ('test', 'URL Test'),
-    ('prod', 'URL Prod'),
+    ('test', 'Test'),
+    ('prod', 'Prod'),
+    ]
+
+TYPE_TT = [
+    ('Incident', 'Инцидент'),
+    ('Service', 'Услуга'),
     ]
