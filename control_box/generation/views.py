@@ -1,8 +1,11 @@
-from django.http import HttpResponse
-
-from django.shortcuts import render, redirect
-from .forms import Generation
-from .utils import calculate
+from django.shortcuts import render
+from .forms import (
+    Generation,
+    NameScheduleForm,
+    DateTimeScheduleForm,
+    ActionScheduleForm,
+    TextActionForm,
+)
 
 
 def generation(request):
@@ -16,6 +19,10 @@ def generation(request):
 
 def hand_creation(request):
     template_name = 'generation/hand.html'
+    # # Обработка редактирования записи
+    # if request.method == 'GET' and 'fix_id' in request.GET:
+    #     fix_id = request.GET.get('fix_id')
+
     # Обработка удаления всех записей
     if request.method == 'GET' and 'clear_all' in request.GET:
         request.session['deferred_requests'] = []
@@ -44,6 +51,7 @@ def hand_creation(request):
             'id': len(deferred_requests) + 1,
             'urls': form.cleaned_data['urls'],
             'type_tt': form.cleaned_data['type_tt'],
+            'city': form.cleaned_data['city'],
             'priority': form.cleaned_data['priority'],
             'executor': form.cleaned_data['executor'],
             'coordinator': form.cleaned_data['coordinator'],
@@ -62,8 +70,38 @@ def hand_creation(request):
 
 def automatic_creation(request):
     template_name = 'generation/automatic.html'
-    category = {automatic_creation: 'test automatic_creation'}
+    name_form = NameScheduleForm(request.GET or None)
+    date_form = DateTimeScheduleForm(request.GET or None)
+    action_Form = ActionScheduleForm(request.GET or None)
+    text_action_form = TextActionForm(request.GET or None)
+    if name_form.is_valid() and date_form.is_valid():
+        # Если форма заполнена сохранить в БД
+        pass
     context = {
-        'type': category,
+        'name_form': name_form,
+        'date_form': date_form,
+        'action_form': action_Form,
+        'text_action_form': text_action_form
     }
     return render(request, template_name, context)
+
+
+"""def automatic_creation(request):
+    template_name = 'generation/automatic.html'
+    form = TaskForm(request.POST)
+    context = {'form': form}
+    if form.is_valid():
+        selected = form.cleaned_data['task']
+        if 'Ежедневный запуск' in selected:
+            name_form = NameScheduleForm()
+           # request.session['task_type'] = name_form
+            context = {
+                'form': name_form
+            }
+            if form.is_valid():
+                date_form = DateTimeScheduleForm()
+                context = {
+                    'form': date_form
+                }
+    return render(request, template_name, context)
+"""

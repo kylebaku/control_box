@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    Укажите расписание задачи
+                </div>
+                <div class="card-body">
+                    <form method="GET">
+                        <div class="row">
+                            <!-- Левая колонка: Имя правила -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header text-center">
+                                        Имя правила
+                                    </div>
+                                    <div class="card-body text-center">
+                                        {% bootstrap_field name_form.name_schedule %}
+                                        {% bootstrap_field name_form.description_schedule %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Правая колонка: Периодичность запуска -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header text-center">
+                                        Периодичность запуска
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <small>📅 <strong>Месяцы не выбраны</strong> — задача будет выполняться ежемесячно</small>
+                                                {% bootstrap_field date_form.monthly_schedule %}
+                                            </div>
+                                            <div class="col-md-12 mt-3">
+                                                <small>📒 <strong>Дни недели не выбраны</strong> — задача будет выполняться ежедневно</small>
+                                                {% bootstrap_field date_form.weekly_schedule %}
+                                            </div>
+                                            <div class="col-md-12 mt-3">
+                                                <small>⏰ <strong>Время запуска</strong> — выберите время запуска задачи</small>
+                                                {% bootstrap_field date_form.time_schedule %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Нижняя карточка: Настройка правила -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header text-center">
+                                        <h6 class="mb-0">⚙️ Настройка правила</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <label class="form-label small text-muted">
+                                                    📅 Укажите дату старта правила
+                                                </label>
+                                                {% bootstrap_field date_form.start_date %}
+                                            </div>
+                                            <div class="col-md-7">
+                                                {% bootstrap_field action_form.action_name %}       
+                                            </div>
+                                            <div class="col-12 mt-3">
+                                                    {% bootstrap_field text_action_form.text_action %}
+                                                </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Кнопка отправки -->
+                        <div class="row mt-3">
+                            <div class="col-md-12 text-center">
+                                {% bootstrap_button button_type="submit" content="Сохранить" %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

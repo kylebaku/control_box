@@ -36,3 +36,8 @@ box.code-workspace
 # security
 .env
 *.env
+
+#статические файлы
+
+bootstrap-icons/
+icons/

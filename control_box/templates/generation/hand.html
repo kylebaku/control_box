@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 {% block content %}
+ 
 <div class="row" style="margin-left: -200px; margin-top: 50px;">
   <div class="row mx-0">
     <div class="col-lg-4">
@@ -10,7 +11,22 @@
         </div>
         <div class="card-body">
           <form method="get">
-            {% bootstrap_form form %}
+            <div class="row">
+              <div class="col-md-4 text-center">
+                {% bootstrap_field form.type_tt %}
+              </div>
+              <div class="col-md-4 text-center">
+                {% bootstrap_field form.priority %}
+              </div>
+              <div class="col-md-4 text-center">
+                {% bootstrap_field form.urls %}
+              </div>
+                {% bootstrap_field form.city %}
+                {% bootstrap_field form.executor %}
+                {% bootstrap_field form.coordinator %}
+                {% bootstrap_field form.sample_text %}
+                {% bootstrap_field form.short_description %}
+            </div>
             <div class="d-grid gap-2">
               <button type="submit" name="action" value="submit" class="btn btn-primary">
                 Добавить запрос
@@ -26,52 +42,56 @@
         <strong>Отложенные запросы</strong>
         {% if deferred_requests %}
         <a href="?clear_all=true" 
-           class="btn btn-outline-danger btn-sm"
-           onclick="return confirm('Вы уверены, что хотите удалить ВСЕ отложенные запросы?')">
-          🗑️ Очистить все
+          onclick="return confirm('Вы уверены, что хотите удалить ВСЕ отложенные запросы?')">
+          <i class="bi bi-trash" style="font-size: 2rem; color: red;"></i>
         </a>
         {% endif %}
       </div>
       <table class="table table-bordered mt-2">
-        <thead>
-          <tr>
+    <thead>
+        <tr>
             <th scope="col">ID</th>
             <th scope="col">Среда</th>
             <th scope="col">Тип запроса</th>
             <th scope="col">Приоритет</th>
+            <th scope="col">Город возникновения</th>
             <th scope="col">Роль ответственного</th>
             <th scope="col">Координатор</th>
             <th scope="col">Краткое описание</th>
             <th scope="col">Детальное описание</th>
             <th scope="col">Действие</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for request_item in deferred_requests %}
-          <tr>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request_item in deferred_requests %}
+        <tr>
             <th scope="row">{{ request_item.id }}</th>
             <td>{{ request_item.urls }}</td>
             <td>{{ request_item.type_tt }}</td>
             <td>{{ request_item.priority }}</td>
+            <td>{{ request_item.city }}</td>
             <td>{{ request_item.executor }}</td>
             <td>{{ request_item.coordinator }}</td>
             <td>{{ request_item.sample_text }}</td>
             <td>{{ request_item.short_description|truncatechars:100 }}</td>
             <td>
-              <a href="?delete_id={{ request_item.id }}" 
-                 class="btn btn-danger btn-sm"
-                 onclick="return confirm('Вы уверены, что хотите удалить запрос ID:{{ request_item.id }}?')">
-                Удалить
-              </a>
+                <a href="?delete_id={{ request_item.id }}" 
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Вы уверены, что хотите удалить запрос ID:{{ request_item.id }}?')">
+                    <i class="bi bi-trash"></i>  
+                </a>
+                <a href="?fix_id={{ request_item.id }}" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-pencil-square"></i>  
+                </a>
             </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="9" class="text-center">Нет отложенных запросов</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="10" class="text-center">Нет отложенных запросов</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
     </div>
   </div>
 </div>

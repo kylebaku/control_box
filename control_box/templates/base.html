@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 {% load static %}
+<link rel="stylesheet" href="{% static 'bootstrap-icons/css/bootstrap-icons.min.css' %}">
 <html lang="ru" data-bs-theme="dark">
   <head>
     <meta charset="UTF-8">
     <title>ControlBox</title>
-    <!-- Подключаем библиотеку django_bootstrap5.
-      Это нужно сделать во всех шаблонах,
-      где будут применяться теги этой библиотеки. -->
     {% load django_bootstrap5 %}
-    <!-- Загружаем файл с CSS-стилями по умолчанию.
-      Это делается только в базовом шаблоне. -->
     {% bootstrap_css %}
   </head>
   <body>
@@ -17,6 +13,5 @@
     <div class="container pt-5">
       {% block content %}{% endblock %}
     </div>
-    <script src="{% static 'control_box/js/theme-toggle.js' %}"></script>
   </body>
 </html> 

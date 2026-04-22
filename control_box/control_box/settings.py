@@ -72,7 +72,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'postgres': {
+    'postgres_zbx': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'zabbix_db',
         'USER': os.getenv('zbx_login'),
@@ -127,3 +127,4 @@ STATICFILES_DIRS = [
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+

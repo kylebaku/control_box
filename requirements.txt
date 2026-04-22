@@ -2,3 +2,4 @@ django-debug-toolbar<4.3.0
 python-dotenv==1.0.1
 psycopg2==2.9.11
 bootstrap5==22.2
+django-bootstrap-icons
