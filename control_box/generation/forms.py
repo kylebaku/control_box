@@ -169,3 +169,14 @@ class RulesScheduleForm(forms.ModelForm):
     class Meta:
         model = RulesSchedule
         fields = '__all__'
+
+
+class ScrolingSQLForm(forms.Form):
+    sql_query_count = forms.IntegerField(
+        label='укажите количество срабатываний',
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Введите число',
+            'step': '1'
+        })
+    )

@@ -1,19 +1,20 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 {% block content %}
-<div class="container">
+<div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-6">
-            <div class="card">
+        <div class="col-md-12">
+            <div class="card mt-5 ">
                 <div class="card-header text-center">
                     Укажите расписание задачи
                 </div>
                 <div class="card-body">
-                    <form method="GET">
+                    <form method="post">
+                        {% csrf_token %}
                         <div class="row">
                             <!-- Левая колонка: Имя правила -->
-                            <div class="col-md-6">
-                                <div class="card">
+                            <div class="col-md-4">
+                                <div class="card h-100">
                                     <div class="card-header text-center">
                                         Имя правила
                                     </div>
@@ -22,11 +23,11 @@
                                         {% bootstrap_field name_form.description_schedule %}
                                     </div>
                                 </div>
-                            </div>
+                            </div>                    
                             
-                            <!-- Правая колонка: Периодичность запуска -->
-                            <div class="col-md-6">
-                                <div class="card">
+                            <!-- Центральная колонка: Периодичность запуска -->
+                            <div class="col-md-4">
+                                <div class="card h-100">
                                     <div class="card-header text-center">
                                         Периодичность запуска
                                     </div>
@@ -48,34 +49,69 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Нижняя карточка: Настройка правила -->
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <div class="card shadow-sm">
+                            
+                            <!-- Правая колонка: Настройка правила -->
+                            <div class="col-md-4">
+                                <div class="card h-100 shadow-sm">
                                     <div class="card-header text-center">
                                         <h6 class="mb-0">⚙️ Настройка правила</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-5">
+                                            <div class="col-md-12">
                                                 <label class="form-label small text-muted">
                                                     📅 Укажите дату старта правила
                                                 </label>
                                                 {% bootstrap_field date_form.start_date %}
                                             </div>
-                                            <div class="col-md-7">
+                                            <div class="col-md-12">
                                                 {% bootstrap_field action_form.action_name %}       
                                             </div>
-                                            <div class="col-12 mt-3">
-                                                    {% bootstrap_field text_action_form.text_action %}
-                                                </div>
+                                            <div class="col-md-12 mt-3">
+                                                {% bootstrap_field text_action_form.text_action %}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Нижняя карточка: Критерии выбора тригера  -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header text-center">
+                                        Критерии выбора тригера
+                                    </div>
+                                    <div class="card-body">
+                                        <div style="max-height: 300px; overflow-y: auto;">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                    {% for column_table in column_category %} 
+                                                        <th>{{ column_table }}</th>
+                                                    {% endfor %}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for row in type %}
+                                                        <tr>
+                                                            <td>
+                                                                <input type="checkbox" name="selected_ids" value="{{ row.0 }}" class="row_checkbox">
+                                                                <!-- row.0 - это значение первого поля (обычно index) -->
+                                                            </td>
+                                                            {% for cell in row %}
+                                                                <td>{{ cell|default:"0" }}</td>
+                                                            {% endfor %}
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>     
                         
                         <!-- Кнопка отправки -->
                         <div class="row mt-3">
@@ -86,7 +122,9 @@
                     </form>
                 </div>
             </div>
-        </div>
+        </div> 
     </div>
 </div>
+
+
 {% endblock %}

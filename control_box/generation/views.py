@@ -5,8 +5,9 @@ from .forms import (
     DateTimeScheduleForm,
     ActionScheduleForm,
     TextActionForm,
+    ScrolingSQLForm,
 )
-
+from monitoring.models import *
 
 def generation(request):
     template_name = 'generation/generation.html'
@@ -68,12 +69,26 @@ def hand_creation(request):
     return render(request, template_name, context)
 
 
+def value_category(request):
+    template_name = 'generation/automatic.html'
+    count_sql = ScrolingSQLForm(request.POST or None)
+    if count_sql.is_valid():
+        # Получаем значение из формы
+        count = count_sql.cleaned_data['sql_query_count']
+    context = {
+        'count_form': count,
+    }
+    return render(request, template_name, context)
+
 def automatic_creation(request):
     template_name = 'generation/automatic.html'
-    name_form = NameScheduleForm(request.GET or None)
-    date_form = DateTimeScheduleForm(request.GET or None)
-    action_Form = ActionScheduleForm(request.GET or None)
-    text_action_form = TextActionForm(request.GET or None)
+    name_form = NameScheduleForm(request.POST or None)
+    date_form = DateTimeScheduleForm(request.POST or None)
+    action_Form = ActionScheduleForm(request.POST or None)
+    text_action_form = TextActionForm(request.POST or None)
+    category = CategoryStok.objects.using('postgres_zbx').all().values()
+    type_data = [list(row.values()) for row in category]
+    column_category = [field.db_column or field.name for field in CategoryStok._meta.fields]
     if name_form.is_valid() and date_form.is_valid():
         # Если форма заполнена сохранить в БД
         pass
@@ -81,7 +96,9 @@ def automatic_creation(request):
         'name_form': name_form,
         'date_form': date_form,
         'action_form': action_Form,
-        'text_action_form': text_action_form
+        'text_action_form': text_action_form,
+        'type': type_data,
+        'column_category': column_category,
     }
     return render(request, template_name, context)
 
