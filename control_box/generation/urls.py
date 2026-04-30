@@ -9,4 +9,5 @@ urlpatterns = [
     path('', views.generation, name='generation'),
     path('hand/', views.hand_creation, name='hand_creation'),
     path('automatic/', views.automatic_creation, name='automatic_creation'),
+    path('<int:pk>/edit/', views.automatic_creation, name='automatic_edit'),
 ]

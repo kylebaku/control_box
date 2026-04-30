@@ -1,6 +1,6 @@
 from django.db import models
 
-
+#имя условия
 class NameSchedule(models.Model):
     name_schedule = models.CharField(
         '',
@@ -18,7 +18,7 @@ class NameSchedule(models.Model):
         verbose_name = 'Имя правила'
         verbose_name_plural = 'Имена правил'
 
-
+#Дата и время расписания.
 class DateTimeSchedule(models.Model):
     """Дата и время расписания."""
     monthly_schedule = models.CharField('')
@@ -33,7 +33,7 @@ class DateTimeSchedule(models.Model):
         verbose_name = 'Дата и время расписания'
         verbose_name_plural = 'Даты и время расписаний'
 
-
+#Текстовое сообщение при возникновении срабатывания задачи
 class TextAction(models.Model):
     """Текстовое сообщение при возникновении срабатывания задачи."""
     text_action = models.TextField('Сообщение')
@@ -45,19 +45,12 @@ class TextAction(models.Model):
         verbose_name = 'Тип действия'
         verbose_name_plural = 'Типы действий'
 
-
+#Тип задачи планировщика ТТ, почта, buzz.
 class ActionSchedule(models.Model):
     """Тип задачи планировщика ТТ, почта, buzz."""
     action_name = models.CharField(
         'Тип оповещения о событии',
-        max_length=50
-    )
-    text_action = models.ForeignKey(
-        TextAction,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name='Укажите действия с задачей'
+        max_length=55
     )
 
     def __str__(self):
@@ -67,7 +60,7 @@ class ActionSchedule(models.Model):
         verbose_name = 'Тип попвещений задач'
         verbose_name_plural = 'Типы оповещений'
 
-
+#Правила срабатывания задачи.
 class RulesSchedule(models.Model):
     """Правила срабатывания задачи."""
     name_rules = models.CharField(
@@ -82,7 +75,7 @@ class RulesSchedule(models.Model):
         verbose_name = 'Правило расписания'
         verbose_name_plural = 'Правила расписаний'
 
-
+#Основной планировщик задачи.
 class Scheduler(models.Model):
     """Основной планировщик."""
     user_create_schedule = models.CharField(
@@ -114,6 +107,13 @@ class Scheduler(models.Model):
         default=''
     )
 
+    text_action = models.ForeignKey(
+        TextAction,
+        on_delete=models.CASCADE,
+        verbose_name='Текст сообщения при срабатывании',
+        blank=True
+    )
+
     def __str__(self):
         return f"Scheduler #{self.id} - {self.user_create_schedule}"
 
@@ -125,14 +125,14 @@ class Scheduler(models.Model):
 ###############################################################
 #Зарпос в БД
 ###############################################################
-class CategoryStok(models.Model):
+class ProblemName(models.Model):
     index = models.BigIntegerField(primary_key=True, blank=True, null=False) 
-    category_name = models.TextField(db_column='Category_Name', blank=True, null=True)  # Field name made lowercase.
-    category_type = models.TextField(db_column='Category_Type', blank=True, null=True)  # Field name made lowercase.
+    problem_name= models.TextField(db_column='problem_name', blank=True, null=True)
+    # category_type = models.TextField(db_column='Category_Type', blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'Category_stok'
+        db_table = 'zabbix_trigger_adm'
 
     def __str__(self):
         return str(self.__dict__)

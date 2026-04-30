@@ -1,10 +1,32 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 {% block content %}
-<div class="container-fluid">
+{% load custom_filters %}
+
+<style>
+    /* Расширяем родительский контейнер на всю ширину */
+    .container.pt-5 {
+        max-width: 90% !important;
+        width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Убираем отступы у body */
+    body {
+        overflow-x: hidden;
+    }
+    
+    /* Дополнительно: убираем возможные ограничения */
+    .container {
+        max-width: 100% !important;
+    }
+</style>
+
+<div class="container-fluid px-0">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="card mt-5 ">
+            <div class="card mt-5">
                 <div class="card-header text-center">
                     Укажите расписание задачи
                 </div>
@@ -13,7 +35,7 @@
                         {% csrf_token %}
                         <div class="row">
                             <!-- Левая колонка: Имя правила -->
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="card h-100">
                                     <div class="card-header text-center">
                                         Имя правила
@@ -26,7 +48,7 @@
                             </div>                    
                             
                             <!-- Центральная колонка: Периодичность запуска -->
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <div class="card h-100">
                                     <div class="card-header text-center">
                                         Периодичность запуска
@@ -51,7 +73,7 @@
                             </div>
                             
                             <!-- Правая колонка: Настройка правила -->
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="card h-100 shadow-sm">
                                     <div class="card-header text-center">
                                         <h6 class="mb-0">⚙️ Настройка правила</h6>
@@ -74,45 +96,46 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         
-                        <!-- Нижняя карточка: Критерии выбора тригера  -->
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-header text-center">
-                                        Критерии выбора тригера
-                                    </div>
-                                    <div class="card-body">
-                                        <div style="max-height: 300px; overflow-y: auto;">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                    {% for column_table in column_category %} 
-                                                        <th>{{ column_table }}</th>
-                                                    {% endfor %}
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for row in type %}
+                            <!-- Нижняя карточка: Критерии выбора тригера  -->
+                            <div class="col-md-4">
+                                <div class="col-md-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header text-center">
+                                            Критерии выбора тригера
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <div style="max-height: 300px; overflow-y: auto;">
+                                                <table class="table table-hover table-sm">
+                                                    <thead>
                                                         <tr>
-                                                            <td>
-                                                                <input type="checkbox" name="selected_ids" value="{{ row.0 }}" class="row_checkbox">
-                                                                <!-- row.0 - это значение первого поля (обычно index) -->
-                                                            </td>
-                                                            {% for cell in row %}
-                                                                <td>{{ cell|default:"0" }}</td>
+                                                            {% for column_table in column_category %}
+                                                                <th></th>
+                                                                <th class="small py-1">{{ column_table }}</th>
                                                             {% endfor %}
                                                         </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for row in type %}
+                                                            <tr>
+                                                                <td class="align-middle" style="width: 30px;"> 
+                                                                    <input type="checkbox" name="selected_ids" value="{{ row.0 }}" class="row_checkbox">
+                                                                </td>
+                                                                {% for cell in row %}
+                                                                    <td class="small text-break" style="font-size: 0.85rem; word-wrap: break-word;">
+                                                                        {{ cell|default:"0" }}
+                                                                    </td>
+                                                                {% endfor %}
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>     
-                        
+                        </div>
                         <!-- Кнопка отправки -->
                         <div class="row mt-3">
                             <div class="col-md-12 text-center">
@@ -122,9 +145,63 @@
                     </form>
                 </div>
             </div>
-        </div> 
+            
+            <!-- ========== ВТОРОЙ БЛОК ПЕРЕНЕСЕН СЮДА ========== -->
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header text-center">
+                            Сформированные задачи
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive" style="max-height: 400px;">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>№</th>
+                                            <th>Инициатор</th>
+                                            <th>Название</th>
+                                            <th>Описание условия</th>
+                                            <th>Правило срабатывания</th>
+                                            <th>Сообщение</th>
+                                            <th>Тип оповещения</th>
+                                            <th>Месяц</th>
+                                            <th>Неделя</th>
+                                            <th>Время срабатывания</th>
+                                            <th>Дата старта</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for schedule in shedule_list %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" name="selected_ids" value="{{ schedule.id }}" class="row_checkbox">
+                                            </td>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ schedule.user_create_schedule }}</td>
+                                            <td>{{ schedule.description_schedule.name_schedule }}</td>
+                                            <td>{{ schedule.description_schedule.description_schedule }}</td>
+                                            <td>{{ schedule.rules_schedule.name_rules }}</td>
+                                            <td>{{ schedule.text_action.text_action }}</td>
+                                            <td>{{ schedule.action_schedule.action_name }}</td>
+                                            <td>{{ schedule.date_time_schedule.monthly_schedule|month_name }}</td>
+                                            <td>{{ schedule.date_time_schedule.weekly_schedule|weekly_name }}</td>
+                                            <td>{{ schedule.date_time_schedule.time_schedule }}</td>
+                                            <td>{{ schedule.date_time_schedule.start_date }}</td>
+                                            <td>
+                                                <a href="{% url 'generation:automatic_edit' schedule.id %}"><i class="bi bi-pencil"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>    
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>           
+        </div>
     </div>
-</div>
-
-
+</div> 
 {% endblock %}

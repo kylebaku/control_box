@@ -84,11 +84,10 @@ class Generation(forms.Form):
         if self.data.get('type_tt') == 'Service':
             self.fields['priority'].initial = 5
 
+
 ###############################################################################
 # automatic form
 ###############################################################################
-
-
 class SchedulerForm(forms.ModelForm):
     class Meta:
         model = Scheduler
@@ -156,13 +155,15 @@ class TextActionForm(forms.ModelForm):
 
 
 class ActionScheduleForm(forms.ModelForm):
+    action_name = forms.ModelChoiceField(
+        queryset=ActionSchedule.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='Тип оповещения о событии',
+    )
+    
     class Meta:
         model = ActionSchedule
-        fields = '__all__'
-        widgets = {
-            'action_name': forms.DateInput(
-                attrs={'class': 'form-control'}),
-        }
+        fields = ['action_name']
 
 
 class RulesScheduleForm(forms.ModelForm):
@@ -171,12 +172,12 @@ class RulesScheduleForm(forms.ModelForm):
         fields = '__all__'
 
 
-class ScrolingSQLForm(forms.Form):
-    sql_query_count = forms.IntegerField(
-        label='укажите количество срабатываний',
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Введите число',
-            'step': '1'
-        })
-    )
+# class ScrolingSQLForm(forms.Form):
+#     sql_query_count = forms.IntegerField(
+#         label='укажите количество срабатываний',
+#         widget=forms.NumberInput(attrs={
+#             'class': 'form-control',
+#             'placeholder': 'Введите число',
+#             'step': '1'
+#         })
+#     )
