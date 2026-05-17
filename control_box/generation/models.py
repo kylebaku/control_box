@@ -67,7 +67,11 @@ class RulesSchedule(models.Model):
         'Выберите условие',
         max_length=50
     )
-
+    count_rules = models.IntegerField(null=True, blank=False)
+    month_over_month = models.IntegerField(null=True, blank=False)
+    week_over_week = models.IntegerField(null=True, blank=False)
+    day_over_day = models.IntegerField(null=True, blank=False)
+    
     def __str__(self):
         return self.name_rules
 
@@ -126,8 +130,8 @@ class Scheduler(models.Model):
 #Зарпос в БД
 ###############################################################
 class ProblemName(models.Model):
-    index = models.BigIntegerField(primary_key=True, blank=True, null=False) 
-    problem_name= models.TextField(db_column='problem_name', blank=True, null=True)
+    index = models.BigIntegerField(primary_key=True) 
+    problem_name = models.TextField(db_column='problem_name')
     # category_type = models.TextField(db_column='Category_Type', blank=True, null=True)
 
     class Meta:
