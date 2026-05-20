@@ -127,6 +127,7 @@ class DateTimeScheduleForm(forms.ModelForm):
             'time_schedule': forms.TimeInput(
                 attrs={'type': 'time', 'class': 'form-control'}),
             'start_date': forms.DateInput(
+                format='%Y-%m-%d',
                 attrs={'type': 'date', 'class': 'form-control'})
         }
 
@@ -170,7 +171,12 @@ class RulesScheduleForm(forms.ModelForm):
     class Meta:
         model = RulesSchedule
         fields = '__all__'
-
+        widgets = {
+            'count_rules': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'style': 'width: 80px;'}),
+            'month_over_month': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'style': 'width: 80px;'}),
+            'week_over_week': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'style': 'width: 80px;'}),
+            'day_over_day': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'style': 'width: 80px;'}),
+        }
 
 # class ScrolingSQLForm(forms.Form):
 #     sql_query_count = forms.IntegerField(

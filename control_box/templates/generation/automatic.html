@@ -65,7 +65,7 @@
                                             </div>
                                             <div class="col-md-12 mt-3">
                                                 <small>⏰ <strong>Время запуска</strong> — выберите время запуска задачи</small>
-                                                {% bootstrap_field date_form.time_schedule %}
+                                                {% bootstrap_field date_form.time_schedule %} 
                                             </div>
                                         </div>
                                     </div>
@@ -88,7 +88,7 @@
                                             </div>
                                             <div class="col-md-12">
                                                 {% bootstrap_field action_form.action_name %}       
-                                            </div>
+                                            </div> 
                                             <div class="col-md-12 mt-3">
                                                 {% bootstrap_field text_action_form.text_action %}
                                             </div>
@@ -104,52 +104,49 @@
                                         <div class="card-header text-center">
                                             Критерии выбора тригера
                                         </div>
-                                        <div class="card-body p-2">
-                                            
-                                            <div style="max-height: 300px; overflow-y: auto;">
-                                                <table class="table table-hover table-sm">
-                                                    <thead>
-                                                        <tr>
-                                                            {% for column_table in column_category %}
-                                                                <th></th>
-                                                                <th class="small py-1">{{ column_table }}</th>
-                                                            {% endfor %}
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for row in type %}
+                                            <div class="card-body p-2">
+                                                <div style="max-height: 300px; overflow-y: auto;">
+                                                    <table class="table table-hover table-sm">
+                                                        <thead>
                                                             <tr>
-                                                                <td class="align-middle" style="width: 30px;"> 
-                                                                    <input type="checkbox" name="selected_ids" value="{{ row.0 }}" class="row_checkbox">
-                                                                </td>
-                                                                {% for cell in row %}
-                                                                    <td class="small text-break" style="font-size: 0.85rem; word-wrap: break-word;">
-                                                                        {{ cell|default:"0" }}
-                                                                    </td>
-                                                                {% endfor %}
+                                                                <th class="small py-1">Триггеры админ</th>
                                                             </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <!-- Уменьшенный select: маленький размер, без лишних отступов -->
+                                                                    <select name="selected_ids" class="form-select form-select-sm" style="width: auto; min-width: 150px;">
+                                                                        {% for row in type %}
+                                                                            <option>{{ row.0 }}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <!-- Блок с показателями (уменьшены отступы между колонками) -->
+                                                <div class="row g-1 mt-2">   <!-- g-1 вместо g-3, mt-2 вместо отступа сверху -->
+                                                    <div class="col-md-3">
+                                                        <small><strong>🔢 срабатываний</strong></small><br>
+                                                        <span class="small">{{ rules_schedule.count_rules|default:"—" }}</span>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <small><strong>📅 дней подряд</strong></small><br>
+                                                        <span class="small">{{ rules_schedule.day_over_day|default:"—" }}</span>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <small><strong>📆 недель подряд</strong></small><br>
+                                                        <span class="small">{{ rules_schedule.week_over_week|default:"—" }}</span>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <small><strong>🗓️ месяцев подряд</strong></small><br>
+                                                        <span class="small">{{ rules_schedule.month_over_month|default:"—" }}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                                <div class="row g-3">
-    <div class="col-md-3">
-        <small><strong>🔢 кол-во срабатываний</strong></small><br>
-        {{ rules_schedule.count_rules|default:"—" }}
-    </div>
-    <div class="col-md-3">
-        <small><strong>📅 дней подряд</strong></small><br>
-        {{ rules_schedule.day_over_day|default:"—" }}
-    </div>
-    <div class="col-md-3">
-        <small><strong>📆 недель подряд</strong></small><br>
-        {{ rules_schedule.week_over_week|default:"—" }}
-    </div>
-    <div class="col-md-3">
-        <small><strong>🗓️ месяцев подряд</strong></small><br>
-        {{ rules_schedule.month_over_month|default:"—" }}
-    </div>
-</div>
                                         </div>
                                     </div>
                                 </div>
