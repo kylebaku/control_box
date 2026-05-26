@@ -8,7 +8,7 @@ class NameSchedule(models.Model):
         max_length=50
     )
     description_schedule = models.TextField(
-        'Условие запуска'
+        'Описание правила'
     )
 
     def __str__(self):
@@ -36,7 +36,7 @@ class DateTimeSchedule(models.Model):
 #Текстовое сообщение при возникновении срабатывания задачи
 class TextAction(models.Model):
     """Текстовое сообщение при возникновении срабатывания задачи."""
-    text_action = models.TextField('Сообщение')
+    text_action = models.TextField('Детальное описание')
 
     def __str__(self):
         return self.text_action[:50]
@@ -96,19 +96,19 @@ class Scheduler(models.Model):
         DateTimeSchedule,
         on_delete=models.CASCADE,
         verbose_name='Расписание планировщика',
-        default=''
+        default=None
     )
     action_schedule = models.ForeignKey(
         ActionSchedule,
         on_delete=models.CASCADE,
         verbose_name='Тип оповещения планировщика',
-        default=''
+        default=None
     )
     rules_schedule = models.ForeignKey(
         RulesSchedule,
         on_delete=models.CASCADE,
         verbose_name='Выберите правило срабатывания планировщика',
-        default=''
+        default=None
     )
 
     text_action = models.ForeignKey(
@@ -120,6 +120,23 @@ class Scheduler(models.Model):
 
     def __str__(self):
         return f"Scheduler #{self.id} - {self.user_create_schedule}"
+    
+    def delete(self, *args, **kwargs):
+        name_schedule = self.description_schedule
+        datetime_schedule = self.date_time_schedule
+        rules_schedule = self.rules_schedule
+        text_action = self.text_action
+
+        super().delete(*args, **kwargs)
+
+        if name_schedule:
+            name_schedule.delete()
+        if datetime_schedule:
+            datetime_schedule.delete()
+        if rules_schedule:
+            rules_schedule.delete()
+        if text_action:
+            text_action.delete()
 
     class Meta:
         db_table = 'generation_scheduler'

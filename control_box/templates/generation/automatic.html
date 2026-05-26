@@ -207,6 +207,14 @@
                                             <td>{{ schedule.date_time_schedule.start_date }}</td>
                                             <td>
                                                 <a href="{% url 'generation:automatic_edit' schedule.id %}"><i class="bi bi-pencil"></i></a>
+                                            <td>
+                                               <form method="post" action="{% url 'generation:automatic_delete' schedule.id %}" style="display: inline;">
+                                                {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm p-0 text-danger" onclick="return confirm('Удалить расписание?');">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
                                             </td>
                                         </tr>
                                         {% endfor %}
