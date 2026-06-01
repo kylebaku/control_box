@@ -10,8 +10,7 @@ from .forms import (
     RulesScheduleForm
 )
 from .models import ProblemName, RulesSchedule
-
-
+ 
 def generation(request):
     template_name = 'generation/generation.html'
     category = {generation: 'test generation'}
@@ -208,9 +207,10 @@ def automatic_creation(request, pk=None):
     }
 
     return render(request, template_name, context)
- 
+
 
 def automatic_delete(request, pk):
+
     if request.method == 'POST':
         instance = get_object_or_404(Scheduler, pk=pk)
         instance.delete()

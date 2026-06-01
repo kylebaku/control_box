@@ -17,6 +17,7 @@ print(f"zbx_pass: {'SET' if os.getenv('zbx_pass') else 'NOT SET'}")
 print("==========================")
 
 INSTALLED_APPS = [
+    'background_task',
     'django_bootstrap5',
     'homepage.apps.HomepageConfig',
     'monitoring.apps.MonitoringConfig',
@@ -130,3 +131,16 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
  
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
