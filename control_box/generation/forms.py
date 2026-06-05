@@ -3,7 +3,8 @@ from core.const import (
     PRIORITY_CHOICES,
     ENVIRONMENT,
     TYPE_TT,
-    COORDINATOR_ROLE
+    COORDINATOR_ROLE,
+    DEVICE_TYPE
 )
 from core.query_psql import get_city_choices, get_role_choices
 from .models import (
@@ -161,13 +162,19 @@ class ActionScheduleForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Тип оповещения о событии',
     )
-    
+
     class Meta:
         model = ActionSchedule
         fields = ['action_name']
 
 
 class RulesScheduleForm(forms.ModelForm):
+    device_type = forms.ChoiceField(
+        choices=DEVICE_TYPE,
+        widget=forms.Select,
+        label="",
+    )
+
     class Meta:
         model = RulesSchedule
         fields = '__all__'

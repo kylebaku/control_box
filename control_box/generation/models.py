@@ -1,5 +1,6 @@
 from django.db import models
 
+from core.const import DEVICE_TYPE
 #имя условия
 class NameSchedule(models.Model):
     name_schedule = models.CharField(
@@ -71,6 +72,13 @@ class RulesSchedule(models.Model):
     month_over_month = models.IntegerField(null=True, blank=False)
     week_over_week = models.IntegerField(null=True, blank=False)
     day_over_day = models.IntegerField(null=True, blank=False)
+    device_type = models.CharField(
+        choices=DEVICE_TYPE,
+        max_length=40,
+        verbose_name='Источник триггеров',
+        null=True,
+        blank=True
+    )
     
     def __str__(self):
         return self.name_rules
@@ -147,6 +155,7 @@ class Scheduler(models.Model):
 #Зарпос в БД
 ###############################################################
 class ProblemName(models.Model):
+
     index = models.BigIntegerField(primary_key=True) 
     problem_name = models.TextField(db_column='problem_name')
     # category_type = models.TextField(db_column='Category_Type', blank=True, null=True)
@@ -157,3 +166,27 @@ class ProblemName(models.Model):
 
     def __str__(self):
         return str(self.__dict__)
+
+#Таблица с кодами городов и ролями инженеров
+class BranchRole(models.Model):
+    index = models.BigIntegerField(primary_key=True)
+    branch_code = models.CharField('код офиса', max_length=8)
+    branch_city_en = models.CharField('Город', max_length=40)
+    branch_name = models.CharField('Филиал', max_length=40)
+    branch_role_sop = models.CharField('Роль в Remedy СОП', max_length=50)
+    branch_code_sop = models.CharField('Код роли СОП', max_length=40)
+    branch_role_adm = models.CharField('Роль в Remedy админ', max_length=50)
+    branch_code_adm = models.CharField('Код роли админ', max_length=40)
+
+    class Meta:
+        verbose_name = 'Role in Remedy'
+        verbose_name_plural = 'Roles in Remedy'
+
+class BranchHD(models.Model):
+    code_hd = models.CharField('код офиса_DH', max_length=30)
+    filial_eng = models.CharField('Филиал eng', max_length=40)
+    filialrus = models.CharField('Филиал rus', max_length=40)
+    
+    class Meta:
+        verbose_name = 'Role in Remedy'
+        verbose_name_plural = 'Roles in Remedy'

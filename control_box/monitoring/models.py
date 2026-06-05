@@ -108,7 +108,8 @@ class DeviceModel(TimeModel):
 
     def __str__(self):
         return self.model
- 
+
+
 class CategoryStok(models.Model):
     index = models.BigIntegerField(primary_key=True, blank=True, null=False) 
     category_name = models.TextField(db_column='Category_Name', blank=True, null=True)  # Field name made lowercase.

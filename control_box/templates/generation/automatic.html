@@ -67,6 +67,10 @@
                                                 <small>⏰ <strong>Время запуска</strong> — выберите время запуска задачи</small>
                                                 {% bootstrap_field date_form.time_schedule %} 
                                             </div>
+                                            <div class="col-md-12 mt-3">
+                                                <small>⏰ <strong>Лог событий триггеров</strong> — выберите таблицу регистрации триггера</small>
+                                                {% bootstrap_field rules_schedule.device_type %}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -116,9 +120,13 @@
                                                             <tr>
                                                                 <td>
                                                                     <!-- Уменьшенный select: маленький размер, без лишних отступов -->
-                                                                    <select name="selected_ids" class="form-select form-select-sm" style="width: auto; min-width: 150px;">
+                                                                    <select name="name_rules" class="form-select form-select-sm" style="width: auto; min-width: 150px;">
+                                                                        <option value="">Выберите триггер</option>
                                                                         {% for row in type %}
-                                                                            <option>{{ row.0 }}</option>
+                                                                            <option value="{{ row.0 }}" 
+                                                                                {% if rules_schedule.name_rules.value == row.0 %}selected{% endif %}>
+                                                                                {{ row.0 }}
+                                                                            </option>
                                                                         {% endfor %}
                                                                     </select>
                                                                 </td>
@@ -128,22 +136,31 @@
                                                 </div>
 
                                                 <!-- Блок с показателями (уменьшены отступы между колонками) -->
-                                                <div class="row g-1 mt-2">   <!-- g-1 вместо g-3, mt-2 вместо отступа сверху -->
-                                                    <div class="col-md-3">
-                                                        <small><strong>🔢 срабатываний</strong></small><br>
-                                                        <span class="small">{{ rules_schedule.count_rules|default:"—" }}</span>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <small><strong>📅 дней подряд</strong></small><br>
-                                                        <span class="small">{{ rules_schedule.day_over_day|default:"—" }}</span>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <small><strong>📆 недель подряд</strong></small><br>
-                                                        <span class="small">{{ rules_schedule.week_over_week|default:"—" }}</span>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <small><strong>🗓️ месяцев подряд</strong></small><br>
-                                                        <span class="small">{{ rules_schedule.month_over_month|default:"—" }}</span>
+                                                    <div class="row g-1 mt-2">
+                                                        <div class="col-md-3">
+                                                            <small><strong>🔢 срабатываний</strong></small>
+                                                            <input type="text" name="count_rules" class="form-control form-control-sm" 
+                                                                value="{{ rules_schedule.count_rules.value|default:'' }}" 
+                                                                placeholder="например: 5">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <small><strong>📅 дней подряд</strong></small>
+                                                            <input type="text" name="day_over_day" class="form-control form-control-sm" 
+                                                                value="{{ rules_schedule.day_over_day.value|default:'' }}"
+                                                                placeholder="0">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <small><strong>📆 недель подряд</strong></small>
+                                                            <input type="text" name="week_over_week" class="form-control form-control-sm" 
+                                                                value="{{ rules_schedule.week_over_week.value|default:'' }}"
+                                                                placeholder="0">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <small><strong>🗓️ месяцев подряд</strong></small>
+                                                            <input type="text" name="month_over_month" class="form-control form-control-sm" 
+                                                                value="{{ rules_schedule.month_over_month.value|default:'' }}"
+                                                                placeholder="0">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -175,16 +192,20 @@
                                     <thead>
                                         <tr>
                                             <th></th>
-                                            <th>№</th>
                                             <th>Инициатор</th>
-                                            <th>Название</th>
+                                            <th>таблица регистрации триггера</th>
+                                            <th>Имя правила</th>
                                             <th>Описание условия</th>
-                                            <th>Правило срабатывания</th>
-                                            <th>Сообщение</th>
-                                            <th>Тип оповещения</th>
-                                            <th>Месяц</th>
-                                            <th>Неделя</th>
-                                            <th>Время срабатывания</th>
+                                            <th>Имя триггера</th>
+                                            <th>Срабатываний</th>
+                                            <th>Месяцев подряд</th>
+                                            <th>Недель подряд</th>
+                                            <th>дней подряд</th>
+                                            <th>Детальное описнаие</th>
+                                            <th>action_name</th>
+                                            <th>Месяц запуска</th>
+                                            <th>День недели запуска</th>
+                                            <th>Время запуска</th>
                                             <th>Дата старта</th>
                                         </tr>
                                     </thead>
@@ -194,11 +215,16 @@
                                             <td>
                                                 <input type="checkbox" name="selected_ids" value="{{ schedule.id }}" class="row_checkbox">
                                             </td>
-                                            <td>{{ forloop.counter }}</td>
+                                            {% comment %} <td>{{ forloop.counter }}</td> {% endcomment %}
                                             <td>{{ schedule.user_create_schedule }}</td>
+                                            <td>{{ schedule.rules_schedule.get_device_type_display }}</td>
                                             <td>{{ schedule.description_schedule.name_schedule }}</td>
                                             <td>{{ schedule.description_schedule.description_schedule }}</td>
                                             <td>{{ schedule.rules_schedule.name_rules }}</td>
+                                            <td>{{ schedule.rules_schedule.count_rules }}</td>
+                                            <td>{{ schedule.rules_schedule.month_over_month }}</td>
+                                            <td>{{ schedule.rules_schedule.week_over_week }}</td>
+                                            <td>{{ schedule.rules_schedule.day_over_day }}</td>
                                             <td>{{ schedule.text_action.text_action }}</td>
                                             <td>{{ schedule.action_schedule.action_name }}</td>
                                             <td>{{ schedule.date_time_schedule.monthly_schedule|month_name }}</td>

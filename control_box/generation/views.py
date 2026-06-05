@@ -144,11 +144,13 @@ def automatic_creation(request, pk=None):
             name_form.is_valid() and
             date_form.is_valid() and
             action_form.is_valid() and
-            text_action_form.is_valid()
+            text_action_form.is_valid() and
+            rules_schedule_form.is_valid()
         ):
             try:
                 name_instance = name_form.save()
                 date_instance = date_form.save()
+                rules_instance = rules_schedule_form.save()
                 text_action_instance = text_action_form.save()
                 action_obj = action_form.cleaned_data['action_name']
                 action_id = action_obj.id

@@ -1,7 +1,14 @@
 from django.db import connection
 from background_task import background
 from datetime import date, datetime
-from core.query_psql import get_triger_admin_pc
+from core.query_psql import get_triger_adm_sop, GetTriggeAdmSop
+import pandas as pd
+
+original_max_rows = pd.get_option('display.max_rows')
+original_max_columns = pd.get_option('display.max_columns')
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+
 
 @background
 def query_db_scheduler():
@@ -67,8 +74,22 @@ def query_db_scheduler():
                     f"✅ {name_schedule}: дата {start_date} <= {today} "
                     f"и время совпадает ✅"
                 )
-                print(get_triger_admin_pc(problem_name, count_rules))
-                print(problem_name, count_rules)
+               # print(GetTriggeAdmSop(problem_name, count_rules).serch_triger())
+                #print(GetTriggeAdmSop(problem_name, count_rules).serch_branch())
+                #print(GetTriggeAdmSop(problem_name, count_rules).full_data_adm_sop())
+                #df = GetTriggeAdmSop(problem_name, count_rules).full_data_adm_sop()
+                #print(df)
+                
+                df = GetTriggeAdmSop(problem_name, count_rules).full_data_adm_sop()
+
+                # Настройка pandas для построчного вывода
+                with pd.option_context(
+                    'display.max_rows', None,
+                    'display.max_columns', None,
+                    'display.width', 1000,
+                    'display.expand_frame_repr', False  # Не переносить строки
+                ):
+                    print(df)
                 # Здесь вызывайте нужное действие
             else:
                 print(
