@@ -9,8 +9,9 @@ from .forms import (
     Scheduler,
     RulesScheduleForm
 )
-from .models import ProblemName, RulesSchedule
- 
+from .models import ProblemNameAdm, ProblemNameSop, ProblemNamePrint, RulesSchedule
+
+
 def generation(request):
     template_name = 'generation/generation.html'
     category = {generation: 'test generation'}
@@ -83,15 +84,21 @@ def value_category(request):
     return render(request, template_name, context)
 
 
+def get_problem_names_as_list(model):
+    """Получить список тригеров из таблиц zabbix"""
+    return [list(row.values()) for row in
+            model.objects.using('postgres_zbx')
+            .values('problem_name')
+            .distinct()
+            .order_by('problem_name')]
+
+
 def automatic_creation(request, pk=None):
 
     template_name = 'generation/automatic.html'
-    category = ProblemName.objects.using('postgres_zbx')\
-        .values('problem_name')\
-        .distinct()\
-        .order_by('problem_name')
-
-    type_data = [list(row.values()) for row in category]
+    type_data_adm = get_problem_names_as_list(ProblemNameAdm)
+    type_data_sop = get_problem_names_as_list(ProblemNameSop)
+    type_data_print = get_problem_names_as_list(ProblemNamePrint)
     column_category = ['problem_name']
 
     # Получаем объект Scheduler, если передан pk
@@ -110,36 +117,40 @@ def automatic_creation(request, pk=None):
         action_instance = scheduler_instance.action_schedule
         text_instance = scheduler_instance.text_action
         rules_instance = scheduler_instance.rules_schedule
-        print("scheduler_instance:", scheduler_instance)
-        print("time_schedule:", date_instance)
+    
     # Передаем правильные instance в формы
     name_form = NameScheduleForm(
         request.POST or None, instance=name_instance
-        )  # Имя правила
+    )
     date_form = DateTimeScheduleForm(
         request.POST or None, instance=date_instance
-        )  # Периодичность запуска
+    )
     action_form = ActionScheduleForm(
         request.POST or None,
         initial={'action_name': action_instance} if action_instance and pk else {}
-        )
+    )
     text_action_form = TextActionForm(
-        # Настройка правила текст оповещения
         request.POST or None, instance=text_instance
-        )
+    )
     rules_schedule_form = RulesScheduleForm(
         request.POST or None, instance=rules_instance
-        )
+    )
 
     if request.method == 'POST':
-        #получаем данные из заполненных форм
-        selected_ids = request.POST.getlist('selected_ids')
-        count_rules = request.POST.getlist('count_rules')
-        count_month = request.POST.getlist('month_over_month')
-        count_week = request.POST.getlist('week_over_week')
-        count_day = request.POST.getlist('day_over_day')
-        print("action_form is_valid:", action_form.is_valid())
-        print("action_form cleaned_data:", action_form.cleaned_data)
+        # Получаем триггер из любой вкладки
+        name_rules = (
+            request.POST.get('name_rules') or 
+            request.POST.get('name_rules_sop') or 
+            request.POST.get('name_rules_printer') or 
+            ''
+        )
+        
+        count_rules = request.POST.get('count_rules')
+        count_month = request.POST.get('month_over_month')
+        count_week = request.POST.get('week_over_week')
+        count_day = request.POST.get('day_over_day')
+        device_type = request.POST.get('device_type')
+        print(device_type)
         if (
             name_form.is_valid() and
             date_form.is_valid() and
@@ -148,14 +159,39 @@ def automatic_creation(request, pk=None):
             rules_schedule_form.is_valid()
         ):
             try:
+                # Сохраняем базовые формы
                 name_instance = name_form.save()
                 date_instance = date_form.save()
-                rules_instance = rules_schedule_form.save()
                 text_action_instance = text_action_form.save()
-                action_obj = action_form.cleaned_data['action_name']
-                action_id = action_obj.id
+                action_id = action_form.cleaned_data['action_name'].id
+
                 if scheduler_instance:
-                    # Редактирование существующего расписания
+                    # РЕДАКТИРОВАНИЕ: обновляем существующий RulesSchedule
+                    rules_instance = scheduler_instance.rules_schedule
+                    
+                    if rules_instance:
+                        # Обновляем существующий объект
+                        rules_instance.name_rules = name_rules
+                        rules_instance.count_rules = int(count_rules) if count_rules else 0
+                        rules_instance.month_over_month = int(count_month) if count_month else 0
+                        rules_instance.week_over_week = int(count_week) if count_week else 0
+                        rules_instance.day_over_day = int(count_day) if count_day else 0
+                        rules_instance.device_type = device_type
+                        rules_instance.save()
+                        print(f"Обновлен RulesSchedule id={rules_instance.id}")
+                    else:
+                        # Если почему-то нет связанного RulesSchedule, создаем новый
+                        rules_instance = RulesSchedule.objects.create(
+                            name_rules=name_rules,
+                            count_rules=int(count_rules) if count_rules else 0,
+                            month_over_month=int(count_month) if count_month else 0,
+                            week_over_week=int(count_week) if count_week else 0,
+                            day_over_day=int(count_day) if count_day else 0,
+                            device_type=device_type
+                        )
+                        print(f"Создан новый RulesSchedule id={rules_instance.id}")
+                    
+                    # Обновляем Scheduler
                     scheduler_instance.user_create_schedule = request.user.username
                     scheduler_instance.description_schedule_id = name_instance.id
                     scheduler_instance.date_time_schedule_id = date_instance.id
@@ -163,18 +199,20 @@ def automatic_creation(request, pk=None):
                     scheduler_instance.text_action_id = text_action_instance.id
                     scheduler_instance.rules_schedule_id = rules_instance.id
                     scheduler_instance.save()
-                    messages.success(
-                        request, "✅ Расписание успешно обновлено!")
+                    messages.success(request, "✅ Расписание успешно обновлено!")
+                    
                 else:
-                    # Создание новой записи Правила запуска(кол-во, день, неделя, месяц)
+                    # СОЗДАНИЕ: создаем новый RulesSchedule
                     rules_instance = RulesSchedule.objects.create(
-                        name_rules=' '.join(selected_ids),
-                        count_rules=' '.join(count_rules),
-                        month_over_month=' '.join(count_month),
-                        week_over_week=' '.join(count_week),
-                        day_over_day=' '.join(count_day)
+                        name_rules=name_rules,
+                        count_rules=int(count_rules) if count_rules else 0,
+                        month_over_month=int(count_month) if count_month else 0,
+                        week_over_week=int(count_week) if count_week else 0,
+                        day_over_day=int(count_day) if count_day else 0,
+                        device_type=device_type
                     )
-                    # Создание нового расписания
+                    
+                    # Создаем новый Scheduler
                     Scheduler.objects.create(
                         user_create_schedule=request.user.username,
                         description_schedule_id=name_instance.id,
@@ -183,14 +221,13 @@ def automatic_creation(request, pk=None):
                         text_action_id=text_action_instance.id,
                         rules_schedule_id=rules_instance.id
                     )
-                    messages.success(
-                        request, "✅ Расписание успешно создано!")
+                    messages.success(request, "✅ Расписание успешно создано!")
+                    
                 return redirect('generation:automatic_creation')
-                # Редирект для очистки формы 
+                
             except Exception as e:
-                messages.error(
-                    request, f"❌ Ошибка при сохранении данных: {e}")
-                # Редирект для очистки формы бновление страницы не приведёт к повторной отправке формы.
+                print(f"Ошибка: {e}")
+                messages.error(request, f"❌ Ошибка при сохранении данных: {e}")
                 return redirect('generation:automatic_creation')
 
     shedule = Scheduler.objects.all()
@@ -201,7 +238,9 @@ def automatic_creation(request, pk=None):
         'date_form': date_form,
         'action_form': action_form,
         'text_action_form': text_action_form,
-        'type': type_data,
+        'type_trigger_adm': type_data_adm,
+        'type_trigger_sop': type_data_sop,
+        'type_trigger_print': type_data_print,
         'column_category': column_category,
         'shedule_list': shedule,
         'shedule_fields_name': field_names,

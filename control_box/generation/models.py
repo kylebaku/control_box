@@ -75,9 +75,8 @@ class RulesSchedule(models.Model):
     device_type = models.CharField(
         choices=DEVICE_TYPE,
         max_length=40,
-        verbose_name='Источник триггеров',
-        null=True,
-        blank=True
+        verbose_name='Источник триггеров'
+
     )
     
     def __str__(self):
@@ -155,19 +154,39 @@ class Scheduler(models.Model):
 #Зарпос в БД
 ###############################################################
 class ProblemName(models.Model):
-
+    """Абстрактный базовый класс для общих полей"""
+    
     index = models.BigIntegerField(primary_key=True) 
     problem_name = models.TextField(db_column='problem_name')
     # category_type = models.TextField(db_column='Category_Type', blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = 'zabbix_trigger_adm'
+        abstract = True  # Не создает таблицу в БД
 
     def __str__(self):
         return str(self.__dict__)
 
-#Таблица с кодами городов и ролями инженеров
+
+class ProblemNameAdm(ProblemName):
+    
+    class Meta:
+        managed = False
+        db_table = 'zabbix_trigger_adm'
+
+
+class ProblemNameSop(ProblemName):
+    
+    class Meta:
+        managed = False
+        db_table = 'zabbix_trigger_sop'
+
+class ProblemNamePrint(ProblemName):
+    
+    class Meta:
+        managed = False
+        db_table = 'prn_triggers_new'
+
+#Таблица кодов городов и ролями инженеров
 class BranchRole(models.Model):
     index = models.BigIntegerField(primary_key=True)
     branch_code = models.CharField('код офиса', max_length=8)
@@ -182,6 +201,7 @@ class BranchRole(models.Model):
         verbose_name = 'Role in Remedy'
         verbose_name_plural = 'Roles in Remedy'
 
+#Таблица с ролями городов для создания ТТ в remedy
 class BranchHD(models.Model):
     code_hd = models.CharField('код офиса_DH', max_length=30)
     filial_eng = models.CharField('Филиал eng', max_length=40)

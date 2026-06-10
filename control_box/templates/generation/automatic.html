@@ -101,67 +101,149 @@
                                 </div>
                             </div>
                         
-                            <!-- Нижняя карточка: Критерии выбора тригера  -->
                             <div class="col-md-4">
                                 <div class="col-md-12">
                                     <div class="card shadow-sm">
                                         <div class="card-header text-center">
                                             Критерии выбора тригера
                                         </div>
-                                            <div class="card-body p-2">
-                                                <div style="max-height: 300px; overflow-y: auto;">
-                                                    <table class="table table-hover table-sm">
-                                                        <thead>
-                                                            <tr>
-                                                                <th class="small py-1">Триггеры админ</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>
-                                                                    <!-- Уменьшенный select: маленький размер, без лишних отступов -->
-                                                                    <select name="name_rules" class="form-select form-select-sm" style="width: auto; min-width: 150px;">
-                                                                        <option value="">Выберите триггер</option>
-                                                                        {% for row in type %}
-                                                                            <option value="{{ row.0 }}" 
-                                                                                {% if rules_schedule.name_rules.value == row.0 %}selected{% endif %}>
-                                                                                {{ row.0 }}
-                                                                            </option>
-                                                                        {% endfor %}
-                                                                    </select>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                        <div class="card-body p-2">
+                                            <!-- ВКЛАДКИ -->
+                                            <ul class="nav nav-tabs mb-2" id="triggerTabs" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active" id="admin-tab" data-bs-toggle="tab" 
+                                                            data-bs-target="#admin" type="button" role="tab">
+                                                        Триггеры админ
+                                                    </button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="sop-tab" data-bs-toggle="tab" 
+                                                            data-bs-target="#sop" type="button" role="tab">
+                                                        Триггеры СОП
+                                                    </button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="printer-tab" data-bs-toggle="tab" 
+                                                            data-bs-target="#printer" type="button" role="tab">
+                                                        Триггеры принтеры
+                                                    </button>
+                                                </li>
+                                            </ul>
+
+                                            <!-- СОДЕРЖИМОЕ ВКЛАДОК -->
+                                            <div class="tab-content">
+                                                <!-- Вкладка 1: Триггеры админ (было) -->
+                                                <div class="tab-pane fade show active" id="admin" role="tabpanel">
+                                                    <div style="max-height: 300px; overflow-y: auto;">
+                                                        <table class="table table-hover table-sm">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="small py-1">Триггеры админ</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <select name="name_rules" class="form-select form-select-sm" style="width: auto; min-width: 150px;">
+                                                                            <option value="">Выберите триггер</option>
+                                                                            {% for row in type_trigger_adm %}
+                                                                                <option value="{{ row.0 }}" 
+                                                                                    {% if rules_schedule.name_rules.value == row.0 %}selected{% endif %}>
+                                                                                    {{ row.0 }}
+                                                                                </option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
 
-                                                <!-- Блок с показателями (уменьшены отступы между колонками) -->
-                                                    <div class="row g-1 mt-2">
-                                                        <div class="col-md-3">
-                                                            <small><strong>🔢 срабатываний</strong></small>
-                                                            <input type="text" name="count_rules" class="form-control form-control-sm" 
-                                                                value="{{ rules_schedule.count_rules.value|default:'' }}" 
-                                                                placeholder="например: 5">
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <small><strong>📅 дней подряд</strong></small>
-                                                            <input type="text" name="day_over_day" class="form-control form-control-sm" 
-                                                                value="{{ rules_schedule.day_over_day.value|default:'' }}"
-                                                                placeholder="0">
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <small><strong>📆 недель подряд</strong></small>
-                                                            <input type="text" name="week_over_week" class="form-control form-control-sm" 
-                                                                value="{{ rules_schedule.week_over_week.value|default:'' }}"
-                                                                placeholder="0">
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <small><strong>🗓️ месяцев подряд</strong></small>
-                                                            <input type="text" name="month_over_month" class="form-control form-control-sm" 
-                                                                value="{{ rules_schedule.month_over_month.value|default:'' }}"
-                                                                placeholder="0">
-                                                        </div>
+                                                <!-- Вкладка 2: Триггеры СОП (новая) -->
+                                                <div class="tab-pane fade" id="sop" role="tabpanel">
+                                                    <div style="max-height: 300px; overflow-y: auto;">
+                                                        <table class="table table-hover table-sm">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="small py-1">Триггеры СОП</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <select name="name_rules_sop" class="form-select form-select-sm" style="width: auto; min-width: 150px;">
+                                                                            <option value="">Выберите триггер</option>
+                                                                            {% for row in type_trigger_sop %}
+                                                                                <option value="{{ row.0 }}" 
+                                                                                    {% if rules_schedule.name_rules_sop.value == row.0 %}selected{% endif %}>
+                                                                                    {{ row.0 }}
+                                                                                </option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
                                                     </div>
+                                                </div>
+
+                                                <!-- Вкладка 3: Триггеры принтеры (новая) -->
+                                                <div class="tab-pane fade" id="printer" role="tabpanel">
+                                                    <div style="max-height: 300px; overflow-y: auto;">
+                                                        <table class="table table-hover table-sm">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="small py-1">Триггеры принтеры</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <select name="name_rules_printer" class="form-select form-select-sm" style="width: auto; min-width: 150px;">
+                                                                            <option value="">Выберите триггер</option>
+                                                                            {% for row in type_trigger_print %}
+                                                                                <option value="{{ row.0 }}" 
+                                                                                    {% if rules_schedule.name_rules_printer.value == row.0 %}selected{% endif %}>
+                                                                                    {{ row.0 }}
+                                                                                </option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                             
+
+                                            <!-- Блок с показателями (общий для всех вкладок) -->
+                                            <div class="row g-1 mt-2">
+                                                <div class="col-md-3">
+                                                    <small><strong>🔢 срабатываний</strong></small>
+                                                    <input type="text" name="count_rules" class="form-control form-control-sm" 
+                                                        value="{{ rules_schedule.count_rules.value|default:'' }}" 
+                                                        placeholder="0">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <small><strong>📅 дней подряд</strong></small>
+                                                    <input type="text" name="day_over_day" class="form-control form-control-sm" 
+                                                        value="{{ rules_schedule.day_over_day.value|default:'' }}"
+                                                        placeholder="0">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <small><strong>📆 недель подряд</strong></small>
+                                                    <input type="text" name="week_over_week" class="form-control form-control-sm" 
+                                                        value="{{ rules_schedule.week_over_week.value|default:'' }}"
+                                                        placeholder="0">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <small><strong>🗓️ месяцев подряд</strong></small>
+                                                    <input type="text" name="month_over_month" class="form-control form-control-sm" 
+                                                        value="{{ rules_schedule.month_over_month.value|default:'' }}"
+                                                        placeholder="0">
                                                 </div>
                                             </div>
                                         </div>
@@ -191,7 +273,7 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th></th>
+
                                             <th>Инициатор</th>
                                             <th>таблица регистрации триггера</th>
                                             <th>Имя правила</th>
@@ -212,9 +294,6 @@
                                     <tbody>
                                         {% for schedule in shedule_list %}
                                         <tr>
-                                            <td>
-                                                <input type="checkbox" name="selected_ids" value="{{ schedule.id }}" class="row_checkbox">
-                                            </td>
                                             {% comment %} <td>{{ forloop.counter }}</td> {% endcomment %}
                                             <td>{{ schedule.user_create_schedule }}</td>
                                             <td>{{ schedule.rules_schedule.get_device_type_display }}</td>

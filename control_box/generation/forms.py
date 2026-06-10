@@ -158,9 +158,9 @@ class TextActionForm(forms.ModelForm):
 
 class ActionScheduleForm(forms.ModelForm):
     action_name = forms.ModelChoiceField(
-        queryset=ActionSchedule.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Тип оповещения о событии',
+    queryset=ActionSchedule.objects.all(),
+    widget=forms.Select(attrs={'class': 'form-control'}),
+    label='Тип оповещения о событии',
     )
 
     class Meta:
@@ -174,6 +174,9 @@ class RulesScheduleForm(forms.ModelForm):
         widget=forms.Select,
         label="",
     )
+    name_rules = forms.CharField(required=False)  # делаем необязательными
+    name_rules_sop = forms.CharField(required=False)  # добавляем
+    name_rules_printer = forms.CharField(required=False)  # добавляем
 
     class Meta:
         model = RulesSchedule
@@ -185,12 +188,3 @@ class RulesScheduleForm(forms.ModelForm):
             'day_over_day': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'style': 'width: 80px;'}),
         }
 
-# class ScrolingSQLForm(forms.Form):
-#     sql_query_count = forms.IntegerField(
-#         label='укажите количество срабатываний',
-#         widget=forms.NumberInput(attrs={
-#             'class': 'form-control',
-#             'placeholder': 'Введите число',
-#             'step': '1'
-#         })
-#     )
