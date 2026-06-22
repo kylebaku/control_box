@@ -103,3 +103,4 @@ def scheduler_trigger_adm_sop():
                     f'{weekly_schedule}, {weekly}'
                 )
     return result
+
