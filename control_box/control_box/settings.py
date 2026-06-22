@@ -144,3 +144,6 @@ LOGGING = {
         'level': 'INFO',
     },
 }
+
+LOGIN_REDIRECT_URL = 'generation:generation'
+LOGOUT_REDIRECT_URL = 'generation:generation'

@@ -92,6 +92,9 @@
                                             </div>
                                             <div class="col-md-12">
                                                 {% bootstrap_field action_form.action_name %}       
+                                            </div>
+                                            <div class="col-md-12 mt-3">
+                                                {% bootstrap_field text_action_form.text_short %}
                                             </div> 
                                             <div class="col-md-12 mt-3">
                                                 {% bootstrap_field text_action_form.text_action %}
@@ -283,6 +286,7 @@
                                             <th>Месяцев подряд</th>
                                             <th>Недель подряд</th>
                                             <th>дней подряд</th>
+                                            <th>Краткое описание</th>
                                             <th>Детальное описнаие</th>
                                             <th>action_name</th>
                                             <th>Месяц запуска</th>
@@ -304,6 +308,7 @@
                                             <td>{{ schedule.rules_schedule.month_over_month }}</td>
                                             <td>{{ schedule.rules_schedule.week_over_week }}</td>
                                             <td>{{ schedule.rules_schedule.day_over_day }}</td>
+                                            <td>{{ schedule.text_action.text_short }}</td>
                                             <td>{{ schedule.text_action.text_action }}</td>
                                             <td>{{ schedule.action_schedule.action_name }}</td>
                                             <td>{{ schedule.date_time_schedule.monthly_schedule|month_name }}</td>

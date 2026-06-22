@@ -37,6 +37,12 @@ class DateTimeSchedule(models.Model):
 #Текстовое сообщение при возникновении срабатывания задачи
 class TextAction(models.Model):
     """Текстовое сообщение при возникновении срабатывания задачи."""
+    text_short = models.CharField(
+        verbose_name='Краткое описание',
+        max_length=255,  # ← обязательно добавить!
+        null=True,
+        blank=True
+        )
     text_action = models.TextField('Детальное описание')
 
     def __str__(self):

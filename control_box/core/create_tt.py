@@ -9,8 +9,8 @@ ke = "Личный кабинет сотрудника. Оборудование
 
 def add(prob_name, host, model, sn, ip, contact, adr, br, rl):
     print('ЗАПУСК')
-    url = "http://hd-integration.beeline.ru:9080/remedy_ws/RemedyOut?wsdl"  # prod
-    # url = "https://yd-hd-int-tst.beeline.ru/remedy_ws/RemedyOut?wsdl" #test
+    #url = "http://hd-integration.beeline.ru:9080/remedy_ws/RemedyOut?wsdl"  # prod
+    url = "https://yd-hd-int-tst.beeline.ru/remedy_ws/RemedyOut?wsdl" #test
     data = datetime.datetime.now()
     # дата создания ТТ (системное время сервера)
     IDtt = randint(4134512443, 8934512443)

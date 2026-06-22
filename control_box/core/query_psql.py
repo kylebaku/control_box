@@ -1,13 +1,12 @@
 from django.db import connections, connection
 import pandas as pd
-
+from .const import TYPE_TRIGGER_BD
 
 def get_city_choices():
     """Получение списка городов из базы postgres_zbx"""
     choices = [('', 'Выберите город')]
 
     with connections['postgres_zbx'].cursor() as cursor:
-        # Пример запроса - замените на вашу таблицу с городами
         cursor.execute("""
             select code_hd, filialrus  from ci_branch cb where status = '2'
         """)
@@ -25,7 +24,6 @@ def get_role_choices():
     choices = [('', 'Выберите роль')]
 
     with connections['postgres_zbx'].cursor() as cursor:
-        # Пример запроса - замените на вашу таблицу с городами
         cursor.execute("""
             SELECT "Name", "code_hd"
             FROM dic_orgstructure do2
@@ -102,18 +100,24 @@ class GetTriggeAdmSop:
     """Запрос данных триггеров из таблиц ADM и SOP и подготовка в целом
     данных для формирования ТТ"""
 
-    def __init__(self, trigger_name, trigger_count):
+    def __init__(self, trigger_name, trigger_count, device_type):
         self.trigger_name = trigger_name
         self.trigger_count = trigger_count
-
+        self.device_type = device_type
+        self.trigger_table = TYPE_TRIGGER_BD.get(device_type)
+        
+        # Проверка, что таблица с тригерами найдена
+        if self.trigger_table is None:
+            raise ValueError(f"Неизвестный тип устройства: {device_type}")
+        
     def serch_triger(self):
         """
         Получение списка триггеров по условию полученному из задачи (postgres_zbx)
-        вызывается функцией query_db_scheduler()
         """
         conn = connections['postgres_zbx']
         try:
-            df_trigger = pd.read_sql("""
+            # ✅ Добавляем f перед строкой
+            df_trigger = pd.read_sql(f"""
                     SELECT * FROM (
                         SELECT 
                             hostname, 
@@ -135,7 +139,7 @@ class GetTriggeAdmSop:
                             END AS branch,
                             problem_name,
                             CURRENT_DATE
-                        FROM zabbix_trigger_adm
+                        FROM {self.trigger_table}
                         WHERE problem_name = %s
                             AND dtcreate >= date_trunc('day', CURRENT_TIMESTAMP - INTERVAL '7D')
                         GROUP BY hostname, problem_name, CURRENT_DATE
@@ -154,7 +158,7 @@ class GetTriggeAdmSop:
 
     def serch_branch(self):
         """
-        Функция чтения всех задач из БД для запуска шедуллера.
+        Получаем список код офиса HD и филиала.
         """
         try:
             df_role = pd.read_sql("""
@@ -172,6 +176,9 @@ class GetTriggeAdmSop:
         return df_branch, df_role
 
     def full_data_adm_sop(self):
+        """
+        Получаем код роли HD и роль
+        """
         df_trigger = self.serch_triger()
         df_branch, df_role = self.serch_branch()
         
@@ -193,3 +200,39 @@ class GetTriggeAdmSop:
         
         self.df_merged = df_merged
         return self.df_merged
+
+
+def query_db_scheduler():
+    """
+    Функция чтения всех задач из БД для запуска шедуллера.
+    """
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT gs.user_create_schedule,
+                ga.action_name,
+                gd.monthly_schedule,
+                gd.weekly_schedule,
+                gd.time_schedule,
+                gd.start_date,
+                gn.name_schedule,
+                gn.description_schedule,
+                gr.name_rules,
+                gr.device_type,
+                gr.count_rules,
+                gr.month_over_month,
+                gr.week_over_week,
+                gr.day_over_day,
+                gt.text_action,
+                gt.text_short
+            FROM generation_scheduler gs
+            LEFT JOIN generation_actionschedule ga ON gs.action_schedule_id = ga.id
+            LEFT JOIN generation_datetimeschedule gd ON gs.date_time_schedule_id = gd.id
+            LEFT JOIN generation_nameschedule gn ON gs.description_schedule_id = gn.id
+            LEFT JOIN generation_rulesschedule gr ON gs.rules_schedule_id = gr.id
+            LEFT JOIN generation_textaction gt ON gs.text_action_id = gt.id
+        """)
+        rows = cursor.fetchall()
+        columns = [description[0] for description in cursor.description]
+        result = [dict(zip(columns, row)) for row in rows]
+
+        return result

@@ -10,7 +10,41 @@
               data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <button type="button" class="btn theme-toggle me-2" id="themeToggle"></button>
+      
+      <!-- Блок авторизации -->
+      <div class="d-flex align-items-center ms-auto">
+        {% if user.is_authenticated %}
+          <span class="navbar-text me-3">Пользователь: <b>{{ user.username }}</b></span>
+          <form method="post" action="{% url 'logout' %}" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light btn-sm">Выйти</button>
+          </form>
+        {% else %}
+        <span class="navbar-text me-3">Пользователь: <b>гость</b></span>
+          <div class="dropdown">
+            <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              Войти
+            </button>
+            <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 280px;">
+              <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="username" class="form-label">Логин</label>
+                  <input type="text" name="username" id="username" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label for="password" class="form-label">Пароль</label>
+                  <input type="password" name="password" id="password" class="form-control" required>
+                </div>
+                <input type="hidden" name="next" value="{{ next }}">
+                <button type="submit" class="btn btn-primary w-100">Войти</button>
+              </form>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      
+      <button type="button" class="btn theme-toggle ms-2" id="themeToggle"></button>
       
       <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar">
         <div class="offcanvas-header">

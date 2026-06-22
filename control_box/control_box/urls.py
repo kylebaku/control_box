@@ -8,6 +8,7 @@ urlpatterns = [
     path('monitoring/', include('monitoring.urls')),
     path('report/', include('report.urls')),
     path('generation/', include('generation.urls')),
+    path('auth/', include('django.contrib.auth.urls')),
 ]
 
 if settings.DEBUG:

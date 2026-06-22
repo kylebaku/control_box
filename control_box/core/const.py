@@ -13,6 +13,12 @@ TYPE_TT = [
     ('Service', 'Услуга'),
 ]
 
+TYPE_TRIGGER_BD = {
+    'sop': 'zabbix_trigger_sop',
+    'adm': 'zabbix_trigger_adm',
+    'prn': 'prn_triggers_new',
+}
+
 COORDINATOR_ROLE = [
     (
         'IT Инж 2 ур ГЭП',

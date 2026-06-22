@@ -7,11 +7,11 @@ class GenerationConfig(AppConfig):
 
     def ready(self):
         # Функция запуска планировщика задач
-        from .tasks import query_db_scheduler
+        from .tasks import scheduler_trigger_adm_sop
         from background_task.models import Task, CompletedTask
         
         # Импорт обязательно в функции для избежания зацикливания
-        task_name = 'generation.tasks.query_db_scheduler'
+        task_name = 'generation.tasks.scheduler_trigger_adm_sop'
         Task.objects.filter(task_name=task_name).delete()
         
         # Полная очистка обеих таблиц перед стартом планировщика
@@ -20,4 +20,4 @@ class GenerationConfig(AppConfig):
         # CompletedTask.objects.filter(task_name=task_name).delete()
         
         # Создаем новую задачу
-        query_db_scheduler(schedule=6, repeat=6)
+        scheduler_trigger_adm_sop(repeat=-1)
